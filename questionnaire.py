@@ -1,25 +1,5 @@
-# PROJET QUESTIONNAIRE V3 : POO
-#
-# - Pratiquer sur la POO
-# - Travailler sur du code existant
-# - Mener un raisonnement
-#
-# -> Définir les entitées (données, actions)
-#
-# Question
-#    - titre       - str
-#    - choix       - (str)
-#    - bonne_reponse   - str
-#
-#    - poser()  -> bool
-#
-# Questionnaire
-#    - questions      - (Question)
-#
-#    - lancer()
-#
-
 import json
+import sys
 
 class Question:
     def __init__(self, titre, choix, bonne_reponse):
@@ -74,10 +54,21 @@ class Questionnaire:
         self.difficulte = difficulte
 
     def from_json_data(data):
-        questionnaire_data_questions = questionnaire_data["questions"]
+        questionnaire_data_questions = data["questions"]
         questions = [Question.from_json_data(i) for i in questionnaire_data_questions]
 
         return Questionnaire(questions, data["categorie"], data["titre"], data["difficulte"])
+
+    def from_json_file(filename):
+        try:
+            file = open(filename, "r")
+            json_data = file.read()
+            file.close()
+            questionnaire_data = json.loads(json_data)
+        except:
+            print("Exception lors de l'ouverture ou la fermeture du fichier")
+            return None
+        return Questionnaire.from_json_data(questionnaire_data)
 
     def lancer(self):
         score = 0
@@ -97,19 +88,15 @@ class Questionnaire:
         print("Score final :", score, "sur", len(self.questions))
         return score
 
+# Questionnaire.from_json_file("animaux_leschats_expert.json").lancer()
+print(sys.argv)
 
-# Charger un fichier JSON
+if len(sys.argv) < 2:
+    print("Erreur : Vous devez spécifier le nom du fichier JSON à charger")
+    exit(0)
 
-filename = "cinema_starwars_confirme.json"
+json_filename = sys.argv[1]
+questionnaire = Questionnaire.from_json_file(json_filename)
 
-file = open(filename, "r")
-json_data = file.read()
-file.close()
-questionnaire_data = json.loads(json_data)
-# print("DONNEES JSON :", questionnaire_data)
-# print("questions : " + str(questionnaire_data["questions"]))
-
-Questionnaire.from_json_data(questionnaire_data).lancer()
-
-
-
+if questionnaire:
+    questionnaire.lancer()
