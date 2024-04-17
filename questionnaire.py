@@ -27,7 +27,7 @@ class Question:
         self.choix = choix
         self.bonne_reponse = bonne_reponse
 
-    def FromJsonData(data):
+    def from_json_data(data):
         choix = [i[0] for i in data["choix"]]
         bonne_reponse = [i[0] for i in data["choix"] if i[1]]
         q = Question(data["titre"], choix, bonne_reponse[0])
@@ -35,6 +35,8 @@ class Question:
         return q
 
     def poser(self):
+        # self.num_question = num_question
+
         print("QUESTION")
         print("  " + self.titre)
         for i in range(len(self.choix)):
@@ -66,40 +68,35 @@ class Question:
 
 
 class Questionnaire:
-    def __init__(self, questions):
+    def __init__(self, questions, categorie, titre, difficulte):
         self.questions = questions
+        self.categorie = categorie
+        self.titre = titre
+        self.difficulte = difficulte
+
+    def from_json_data(data):
+        questionnaire_data_questions = questionnaire_data["questions"]
+        questions = [Question.from_json_data(i) for i in questionnaire_data_questions]
+
+        return Questionnaire(questions, data["categorie"], data["titre"], data["difficulte"])
 
     def lancer(self):
         score = 0
+
+        print("------------")
+        print("QUESTIONNAIRE : " + self.titre)
+        print("     Categorie : " + self.categorie)
+        print("     Difficulte : " + self.difficulte)
+        print("     Nombre de questions : " + str(len(self.questions)))
+        print("------------")
+        print()
+
         for question in self.questions:
             if question.poser():
                 score += 1
         print("Score final :", score, "sur", len(self.questions))
         return score
 
-
-"""questionnaire = (
-    ("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris"), 
-    ("Quelle est la capitale de l'Italie ?", ("Rome", "Venise", "Pise", "Florence"), "Rome"),
-    ("Quelle est la capitale de la Belgique ?", ("Anvers", "Bruxelles", "Bruges", "Liège"), "Bruxelles")
-                )
-
-lancer_questionnaire(questionnaire)"""
-
-# q1 = Question("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris")
-# q1.poser()
-
-# data = (("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris", "Quelle est la capitale de la France ?")
-# q = Question.FromData(data)
-# print(q.__dict__)
-
-"""Questionnaire(
-    (
-    Question("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris"), 
-    Question("Quelle est la capitale de l'Italie ?", ("Rome", "Venise", "Pise", "Florence"), "Rome"),
-    Question("Quelle est la capitale de la Belgique ?", ("Anvers", "Bruxelles", "Bruges", "Liège"), "Bruxelles")
-    )
-).lancer()"""
 
 # Charger un fichier JSON
 
@@ -112,9 +109,7 @@ questionnaire_data = json.loads(json_data)
 # print("DONNEES JSON :", questionnaire_data)
 # print("questions : " + str(questionnaire_data["questions"]))
 
-questionnaire_data_questions = questionnaire_data["questions"]
+Questionnaire.from_json_data(questionnaire_data).lancer()
 
-q = Question.FromJsonData(questionnaire_data_questions[0])
-q.poser()
 
 
