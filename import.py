@@ -50,7 +50,7 @@ def generate_json_file(categorie, titre, url):
                 file.close()
                 print("end")
         except:
-            print(f"Exception dans la désérialtisation ou l'utilisation des données (Questionnaire : {titre} url : {url})")
+            print(f"Exception dans la désérialtisation ou l'utilisation des données (Questionnaire : {titre} url : {url} )" )
 
 
 for quizz_data in open_quizz_db_data:
